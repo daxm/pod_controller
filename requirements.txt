@@ -1,4 +1,4 @@
-python-dotenv
+python-decouple
 flask
 ruamel.yaml
 pyVim

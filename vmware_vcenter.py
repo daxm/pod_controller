@@ -3,19 +3,15 @@
 Functions built from VMWare samples by Dmitry to provide functionality to the SDA PoV SJC pods.
 """
 
-from pyVim.connect import Disconnect, SmartConnectNoSSL
+from pyvim.connect import Disconnect, SmartConnectNoSSL
 from pyVmomi import vim, vmodl
 import atexit
+import logging
 
-# For the test functions
-TEST_VM_NAME = "p1_client2"
-TEST_PORTGROUP = "Pod1_Edge1-Port11"
-
+log = logging.getLogger(__name__)
 
 def wait_for_tasks(service_instance, tasks):
-    """Given the service instance si and tasks, it returns after all the
-   tasks are complete
-   """
+    """Given the service instance si and tasks, it returns after all the tasks are complete"""
     property_collector = service_instance.content.propertyCollector
     task_list = [str(task) for task in tasks]
     # Create filter
@@ -169,7 +165,11 @@ def disconnect_network_adapter(vm, idx=0, tasks=None):
         return task
 
 
-def change_vm_adapter_portgroup(vm, idx=0, new_portgroup=None, disable_adapter_before_change=True, tasks=None):
+def change_vm_adapter_portgroup(vm: classmethod,
+                                idx: int=0,
+                                new_portgroup: str=None,
+                                disable_adapter_before_change: bool=True,
+                                tasks=None):
     if disable_adapter_before_change:
         if tasks is not None:
             disconnect_network_adapter(vm, idx, tasks)
@@ -191,13 +191,13 @@ def change_vm_adapter_portgroup(vm, idx=0, new_portgroup=None, disable_adapter_b
         return task
 
 
-def get_vm_network_adapter_status(vm, idx=0):
+def get_vm_network_adapter_status(vm: classmethod, idx: int=0) -> classmethod:
     vm_network_adapters = get_vm_network_adapters(vm, portgroups=False)
     adapter = vm_network_adapters[idx]
     return adapter.connectable.connected
 
 
-def test_getting_data(esxi_content):
+def test_getting_data(esxi_content: classmethod) -> None:
     all_portgroups = get_all_portgroups(esxi_content)
     all_vms = get_all_portgroups(esxi_content)
     print_objects(all_portgroups)
@@ -210,7 +210,7 @@ def test_getting_data(esxi_content):
     print_objects(vm_network_adapters)
 
 
-def test_tasks(esxi_content, esxi_connector):
+def test_tasks(esxi_content: classmethod, esxi_connector: classmethod) -> None:
 
     task_list = []
     vm = get_vm(esxi_content, TEST_VM_NAME)
@@ -233,14 +233,14 @@ def test_tasks(esxi_content, esxi_connector):
     print_objects(vm_network_adapters)
 
 
-def connect2vsphere(host, user, pwd, port):
+def connect2vsphere(host: str, user: str, pwd: str, port: int):
     esxi_connector = SmartConnectNoSSL(host=host, user=user, pwd=pwd, port=port)
     atexit.register(Disconnect, esxi_connector)
     esxi_content = esxi_connector.RetrieveContent()
     return esxi_content, esxi_connector
 
 
-def main():
+def main() -> None:
     """Run tests."""
     HOST = '1.1.1.1'
     PORT = '443'
@@ -256,4 +256,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # For the test functions
+    TEST_VM_NAME = "p1_client2"
+    TEST_PORTGROUP = "Pod1_Edge1-Port11"
+
     main()

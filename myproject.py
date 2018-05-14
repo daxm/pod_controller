@@ -3,6 +3,10 @@ from flask import Flask
 from flask import render_template, request, flash, url_for, redirect
 from ruamel.yaml import YAML
 import vmware_vcenter
+import logging
+
+logging.basicConfig(level='DEBUG')
+log = logging.getLogger("__name__")
 
 app = Flask(__name__)
 
@@ -12,11 +16,11 @@ with open('userdata.yml', 'r') as stream:
         userdata = (yaml.load(stream))
         pods = userdata['pods']
     except:
-        print("An error has occurred trying to open userdata.yml.")
+        log.error("An error has occurred trying to open userdata.yml.")
         exit(1)
 
 
-def vsphere_connect():
+def vsphere_connect() -> (classmethod, classmethod):
     # Connect to vSphere in order to use Dmitry's functions.
     return vmware_vcenter.connect2vsphere(host=config("VCENTER_HOST"),
                                           user=config("VCENTER_USERNAME"),
@@ -25,7 +29,7 @@ def vsphere_connect():
                                           )
 
 
-def update_vms(esxi_content, vms):
+def update_vms(esxi_content: classmethod, vms: dict) -> dict:
     # Populate/Update vms with current information.
     for vm in vms:
         # Get the object that matches the name of this vm.
@@ -38,7 +42,7 @@ def update_vms(esxi_content, vms):
             first_nic = 0
             vm['portgroup'] = network_adapter[first_nic].name
         except:
-            pass
+            log.info(f"No NIC attached to {vm['vmname']}")
         # Get the Status (Connected/Disconnected) of the NIC connected to the aforementioned portgroup.
         if 'portgroup_options' in vm:
             status = vmware_vcenter.get_vm_network_adapter_status(vm_object)
@@ -56,7 +60,7 @@ def index():
 
 
 @app.route("/pod/<string:pod_num>")
-def pod(pod_num):
+def pod(pod_num: str):
     esxi_content, esxi_connector = vsphere_connect()
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
@@ -69,7 +73,7 @@ def pod(pod_num):
 
 
 @app.route("/poweroff/<string:pod_num>/<string:vmname>")
-def poweroff(pod_num, vmname):
+def poweroff(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_off_vm(vm)
@@ -81,7 +85,7 @@ def poweroff(pod_num, vmname):
 
 
 @app.route("/poweron/<string:pod_num>/<string:vmname>")
-def poweron(pod_num, vmname):
+def poweron(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_on_vm(vm)
@@ -93,18 +97,16 @@ def poweron(pod_num, vmname):
 
 
 @app.route("/set_portgroup/<string:pod_num>/<string:vmname>/<string:portgroup>")
-def set_portgroup(pod_num, vmname, portgroup):
+def set_portgroup(pod_num: str, vmname: str, portgroup: str):
     esxi_content, esxi_connector = vsphere_connect()
     task_list = []
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    # dmitry.disconnect_network_adapter(vm)
     new_portgroup = vmware_vcenter.get_portgroup(esxi_content, portgroup)
     vmware_vcenter.change_vm_adapter_portgroup(vm,
                                                idx=0,
                                                new_portgroup=new_portgroup,
                                                disable_adapter_before_change=True,
                                                tasks=task_list)
-    # dmitry.connect_network_adapter(vm)
     update_status_text = "Moving %s NIC to %s" % (vmname, portgroup)
     return render_template("update_status.html",
                            pod_num=pod_num,
@@ -114,7 +116,7 @@ def set_portgroup(pod_num, vmname, portgroup):
 
 
 @app.route("/connect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
-def connect_nic(pod_num, vmname, nic_num):
+def connect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.connect_network_adapter(vm)
@@ -127,7 +129,7 @@ def connect_nic(pod_num, vmname, nic_num):
 
 
 @app.route("/disconnect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
-def disconnect_nic(pod_num, vmname, nic_num):
+def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.disconnect_network_adapter(vm)
@@ -145,5 +147,4 @@ def catchall(path):
 
 
 if __name__ == "__main__":
-    esxi_content, esxi_connector = vsphere_connect()
     app.run(host='0.0.0.0')
