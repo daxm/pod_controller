@@ -3,7 +3,7 @@
 Functions built from VMWare samples by Dmitry to provide functionality to the SDA PoV SJC pods.
 """
 
-from pyvim.connect import Disconnect, SmartConnectNoSSL
+from pyVim.connect import Disconnect, SmartConnectNoSSL
 from pyVmomi import vim, vmodl
 import atexit
 import logging
