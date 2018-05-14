@@ -57,6 +57,7 @@ def index():
 
 @app.route("/pod/<string:pod_num>")
 def pod(pod_num):
+    esxi_content, esxi_connector = vsphere_connect()
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
             title = "Controlling %s" % the_pod['name']
@@ -69,6 +70,7 @@ def pod(pod_num):
 
 @app.route("/poweroff/<string:pod_num>/<string:vmname>")
 def poweroff(pod_num, vmname):
+    esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_off_vm(vm)
     update_status_text = "Powering off %s" % vmname
@@ -80,6 +82,7 @@ def poweroff(pod_num, vmname):
 
 @app.route("/poweron/<string:pod_num>/<string:vmname>")
 def poweron(pod_num, vmname):
+    esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_on_vm(vm)
     update_status_text = "Powering on %s" % vmname
@@ -91,6 +94,7 @@ def poweron(pod_num, vmname):
 
 @app.route("/set_portgroup/<string:pod_num>/<string:vmname>/<string:portgroup>")
 def set_portgroup(pod_num, vmname, portgroup):
+    esxi_content, esxi_connector = vsphere_connect()
     task_list = []
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     # dmitry.disconnect_network_adapter(vm)
@@ -111,6 +115,7 @@ def set_portgroup(pod_num, vmname, portgroup):
 
 @app.route("/connect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
 def connect_nic(pod_num, vmname, nic_num):
+    esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.connect_network_adapter(vm)
     update_status_text = "Connecting NIC for %s" % vmname
@@ -123,6 +128,7 @@ def connect_nic(pod_num, vmname, nic_num):
 
 @app.route("/disconnect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
 def disconnect_nic(pod_num, vmname, nic_num):
+    esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.disconnect_network_adapter(vm)
     update_status_text = "Disconnecting NIC for %s" % vmname
