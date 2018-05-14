@@ -1,0 +1,8 @@
+flask:
+  build: .
+  container_name: my_flask
+  ports:
+    - "5000:5000"
+  volumes:
+    - .:/code
+

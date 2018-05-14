@@ -1,0 +1,27 @@
+.mdl-card {
+	margin: 25px;
+	float: left;
+	margin-top: 5px;
+}
+
+.mdl-card__title {
+	background-color: #303030;
+	background: #3a0e4f; /* Old browsers */
+	background: -moz-linear-gradient(-45deg, #3a0e4f 0%, #9fd8ef 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(-45deg, #3a0e4f 0%,#9fd8ef 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, #3a0e4f 0%,#9fd8ef 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3a0e4f', endColorstr='#9fd8ef',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+.mdl-card__title-text {
+	color: white !important:;
+}
+
+.mdl-card__actions a {
+	font-size: 1.3em;
+	text-decoration: none;
+}
+ul, ol {
+    list-style: none;
+}

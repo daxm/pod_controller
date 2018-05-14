@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block body %}
+<header>
+<h1>{{ title }}</h1>
+</header>
+
+<div id="mainbody">
+<style>
+.demo-card-square > .mdl-card__title {
+color: #fff;
+background: #3030303;
+}
+</style>
+
+{% for vm in vms %}
+<div class="demo-card-square mdl-card mdl-shadow--2dp">
+    <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">
+            {% if 'name' in vm %}
+            {{ vm['name'] }}
+            {% else %}
+            {{ vm['vmname'] }}
+            {% endif %}
+        </h2>
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
+        <ul>
+            <li>
+                <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+                   href='{{ vm['guac_url'] }}' target='_blank'>Connect to Desktop</a>
+                <hr>
+            </li>
+
+            {% if 'power_status' in vm %}
+            <li>
+                {% if vm['power_status'] == 'poweredOn' %}
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+                       for="{{ vm['vmname'] }}_power">
+                    <input type="checkbox" id="{{ vm['vmname'] }}_power" class="mdl-switch__input"
+                           onclick="window.location.href='{{ url_for('poweroff', pod_num=pod_num, vmname=vm['vmname']) }}';"
+                           checked>
+                    <span class="mdl-switch__label">Powered On</span>
+                </label>
+                {% else %}
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+                       for="{{ vm['vmname'] }}_power">
+                    <input type="checkbox" id="{{ vm['vmname'] }}_power" class="mdl-switch__input"
+                           onclick="window.location.href='{{ url_for('poweron', pod_num=pod_num, vmname=vm['vmname']) }}';">
+                    <span class="mdl-switch__label">Powered Off</span>
+                </label>
+                {% endif %}
+            </li>
+            {% endif %}
+
+            {% if 'nic_status' in vm %}
+            <li>
+                {% if vm['nic_status'] == 'Connected' %}
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+                       for="{{ vm['vmname'] }}_nic">
+                    <input type="checkbox" id="{{ vm['vmname'] }}_nic" class="mdl-switch__input"
+                           onclick="window.location.href='{{ url_for('disconnect_nic', pod_num=pod_num, vmname=vm['vmname'], nic_num=0) }}';"
+                           checked>
+                    <span class="mdl-switch__label">NIC Connected</span>
+                </label>
+
+                {% else %}
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
+                       for="{{ vm['vmname'] }}_nic">
+                    <input type="checkbox" id="{{ vm['vmname'] }}_nic" class="mdl-switch__input"
+                           onclick="window.location.href='{{ url_for('connect_nic', pod_num=pod_num, vmname=vm['vmname'], nic_num=0) }}';">
+                    <span class="mdl-switch__label">NIC Disconnected</span>
+                </label>
+                {% endif %}
+            </li>
+            {% endif %}
+
+            {% if 'portgroup_options' in vm %}
+            <li>
+                <hr>
+                Connect the NIC to port:
+                {% for pg in vm['portgroup_options'] %}
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="{{ vm['vmname'] }}_{{ pg }}_network">
+                        <input type="radio" id="{{ vm['vmname'] }}_{{ pg }}_network" class="mdl-radio__button"
+                               name="{{ vm['vmname'] }}_network" value="{{ pg }}"
+                               onclick="window.location.href='{{ url_for('set_portgroup',
+                                                                         pod_num=pod_num,
+                                                                         vmname=vm['vmname'],
+                                                                         portgroup=pg['portgroup']) }}';"
+                    {% if pg['portgroup'] == vm['portgroup'] %}
+                               checked
+                    {% endif %}
+                        >
+                        <span class="mdl-radio__label">{{ pg['name'] }}</span>
+                    </label><br>
+                {% endfor %}
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endfor %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+python-dotenv
+flask
+ruamel.yaml
+pyVim
+pyVmomi
