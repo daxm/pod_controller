@@ -54,12 +54,12 @@ def update_vms(esxi_content: classmethod, vms: dict) -> dict:
 
 
 def get_human_readable_name(pod_num: str, vmname: str) -> str:
+    name = vmname
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
-            if 'name' in the_pod['vms']:
-                name = the_pod['vms']
-            else:
-                name = vmname
+            for vm in the_pod['vms']:
+                if 'name' in vm:
+                    name = vm['name']
     return name
 
 
@@ -68,7 +68,7 @@ def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str)
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
             for vm in the_pod['vms']:
-                if vm['vmname'] == vmname and 'porgroup_options' in vm:
+                if vm['vmname'] == vmname and 'portgroup_options' in vm:
                     for portgrouper in vm['portgroup_options']:
                         if portgroup == portgrouper['portgroup'] and 'name' in portgrouper:
                             portgroup_name = portgrouper['name']
