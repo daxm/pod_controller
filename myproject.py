@@ -53,6 +53,27 @@ def update_vms(esxi_content: classmethod, vms: dict) -> dict:
     return vms
 
 
+def get_human_readable_name(pod_num: str, vmname: str) -> str:
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num:
+            if 'name' in the_pod['vms']:
+                name = the_pod['vms']
+            else:
+                name = vmname
+    return name
+
+
+def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str) -> str:
+    portgroup_name = portgroup
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname and 'porgroup_options' in vm:
+                    for portgrouper in vm['portgroup_options']:
+                        if portgroup == portgrouper['portgroup'] and 'name' in portgrouper:
+                            portgroup_name = portgrouper['name']
+    return portgroup_name
+
 @app.route("/")
 def index():
     title = "SDA PoV Pod Controller"
@@ -77,7 +98,8 @@ def poweroff(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_off_vm(vm)
-    update_status_text = "Powering off %s" % vmname
+    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    update_status_text = "Powering off %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -89,7 +111,8 @@ def poweron(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_on_vm(vm)
-    update_status_text = "Powering on %s" % vmname
+    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    update_status_text = "Powering on %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -107,7 +130,9 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
                                                new_portgroup=new_portgroup,
                                                disable_adapter_before_change=True,
                                                tasks=task_list)
-    update_status_text = "Moving %s NIC to %s" % (vmname, portgroup)
+    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    portgroup_name = get_human_readable_portgroup_name(pod_num=pod_num, vmname=vmname, portgroup=portgroup)
+    update_status_text = "Moving %s NIC to %s" % (name, portgroup_name)
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -120,7 +145,8 @@ def connect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.connect_network_adapter(vm)
-    update_status_text = "Connecting NIC for %s" % vmname
+    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    update_status_text = "Connecting NIC for %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -133,7 +159,8 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.disconnect_network_adapter(vm)
-    update_status_text = "Disconnecting NIC for %s" % vmname
+    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    update_status_text = "Disconnecting NIC for %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
