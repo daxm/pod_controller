@@ -58,7 +58,7 @@ def get_human_readable_name(pod_num: str, vmname: str) -> str:
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
             for vm in the_pod['vms']:
-                if 'name' in vm:
+                if 'name' in vm and vm['vmname'] == vmname:
                     name = vm['name']
     return name
 
