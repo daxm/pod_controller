@@ -6,7 +6,7 @@ import vmware_vcenter
 import logging
 import os
 
-logging.basicConfig(level='DEBUG')
+logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 app = Flask(__name__)
