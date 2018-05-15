@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<div id="mainbody">
+
+<style>
+.demo-card-square > .mdl-card__title {
+  color: #fff;
+  background: #3030303;
+}
+</style>
+
+<hr>
+{% for pod in pods %}
+  <div class="demo-card-square mdl-card mdl-shadow--2dp">
+    <div class="mdl-card__title">
+      <h2 class="mdl-card__title-text">{{ pod['name'] }}</h2>
+    </div>
+    <div class="mdl-card__actions mdl-card--border">
+      <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect"
+         href="{{ url_for('pod', pod_num=pod['pod_number']) }}">Manage Pod</a>
+    </div>
+  </div>
+{% endfor %}
+
+</div>
+{% endblock %}
+

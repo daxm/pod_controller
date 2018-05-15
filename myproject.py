@@ -1,9 +1,10 @@
 from decouple import config
 from flask import Flask
-from flask import render_template, request, flash, url_for, redirect
+from flask import render_template, request, flash, url_for, redirect, send_from_directory
 from ruamel.yaml import YAML
 import vmware_vcenter
 import logging
+import os
 
 logging.basicConfig(level='DEBUG')
 log = logging.getLogger(__name__)
@@ -78,6 +79,14 @@ def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str)
                             portgroup_name = portgrouper['name']
     log.info("Tried to provide a 'human readable' name for PortGroup.")
     return portgroup_name
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')
+
 
 @app.route("/")
 def index():
