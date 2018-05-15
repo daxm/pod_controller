@@ -9,14 +9,16 @@ logging.basicConfig(level='DEBUG')
 log = logging.getLogger("__name__")
 
 app = Flask(__name__)
+USERDATA_FILE = 'userdata.yml'
 
 yaml = YAML(typ='safe')
-with open('userdata.yml', 'r') as stream:
+with open(USERDATA_FILE, 'r') as stream:
     try:
         userdata = (yaml.load(stream))
         pods = userdata['pods']
+        log.info(f"Opened and loaded {USERDATA_FILE}")
     except:
-        log.error("An error has occurred trying to open userdata.yml.")
+        log.error(f"An error has occurred trying to open {USERDATA_FILE}.")
         exit(1)
 
 
@@ -50,6 +52,7 @@ def update_vms(esxi_content: classmethod, vms: dict) -> dict:
                 vm['nic_status'] = 'Connected'
             else:
                 vm['nic_status'] = 'Disconnected'
+    log.info("Updated 'vms' dict with current info from vCenter.")
     return vms
 
 
@@ -60,6 +63,7 @@ def get_human_readable_vm_name(pod_num: str, vmname: str) -> str:
             for vm in the_pod['vms']:
                 if 'name' in vm and vm['vmname'] == vmname:
                     name = vm['name']
+    log.info("Tried to provide a 'human readable' name for VM.")
     return name
 
 
@@ -72,11 +76,13 @@ def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str)
                     for portgrouper in vm['portgroup_options']:
                         if portgroup == portgrouper['portgroup'] and 'name' in portgrouper:
                             portgroup_name = portgrouper['name']
+    log.info("Tried to provide a 'human readable' name for PortGroup.")
     return portgroup_name
 
 @app.route("/")
 def index():
     title = "SDA PoV Pod Controller"
+    log.info("Rendering homepage.")
     return render_template("index.html", title=title, pods=pods)
 
 
@@ -88,8 +94,10 @@ def pod(pod_num: str):
             title = "Controlling %s" % the_pod['name']
             # Update the vms_template values with current data.
             vms = update_vms(esxi_content, the_pod['vms'])
+            log.info(f"Rendering pod.html for pod {pod_num}.")
             return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
     # Return to index if invalid pod number is referenced.
+    log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html")
 
 
@@ -100,6 +108,7 @@ def poweroff(pod_num: str, vmname: str):
     vmware_vcenter.power_off_vm(vm)
     name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Powering off %s" % name
+    log.info(f"Powering off {vmname} for pod {pod_num}.")
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -113,6 +122,7 @@ def poweron(pod_num: str, vmname: str):
     vmware_vcenter.power_on_vm(vm)
     name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Powering on %s" % name
+    log.info(f"Powering on {name} for pod {pod_num}.")
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -133,6 +143,7 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
     name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     portgroup_name = get_human_readable_portgroup_name(pod_num=pod_num, vmname=vmname, portgroup=portgroup)
     update_status_text = "Moving %s NIC to %s" % (name, portgroup_name)
+    log.info(f"Setting portgroup {portgroup_name} for VM {name}.")
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -147,6 +158,7 @@ def connect_nic(pod_num: str, vmname: str, nic_num: int):
     vmware_vcenter.connect_network_adapter(vm)
     name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Connecting NIC for %s" % name
+    log.info(f"Connecting NIC for VM {name} in pod {pod_num}.")
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -161,6 +173,7 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     vmware_vcenter.disconnect_network_adapter(vm)
     name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Disconnecting NIC for %s" % name
+    log.info(f"Disconnecting NIC for VM {name} in pod {pod_num}.")
     return render_template("update_status.html",
                            pod_num=pod_num,
                            vmname=vmname,
@@ -170,8 +183,10 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
 
 @app.route("/<path:path>")
 def catchall(path):
+    log.info(f"Path: {path} not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html", path=path)
 
 
 if __name__ == "__main__":
+    log.info(f"Starting Flask app.")
     app.run(host='0.0.0.0')
