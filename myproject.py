@@ -53,7 +53,7 @@ def update_vms(esxi_content: classmethod, vms: dict) -> dict:
     return vms
 
 
-def get_human_readable_name(pod_num: str, vmname: str) -> str:
+def get_human_readable_vm_name(pod_num: str, vmname: str) -> str:
     name = vmname
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
@@ -98,7 +98,7 @@ def poweroff(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_off_vm(vm)
-    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Powering off %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
@@ -111,7 +111,7 @@ def poweron(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.power_on_vm(vm)
-    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Powering on %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
@@ -130,7 +130,7 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
                                                new_portgroup=new_portgroup,
                                                disable_adapter_before_change=True,
                                                tasks=task_list)
-    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     portgroup_name = get_human_readable_portgroup_name(pod_num=pod_num, vmname=vmname, portgroup=portgroup)
     update_status_text = "Moving %s NIC to %s" % (name, portgroup_name)
     return render_template("update_status.html",
@@ -145,7 +145,7 @@ def connect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.connect_network_adapter(vm)
-    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Connecting NIC for %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
@@ -159,7 +159,7 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
     vmware_vcenter.disconnect_network_adapter(vm)
-    name = get_human_readable_name(pod_num=pod_num, vmname=vmname)
+    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
     update_status_text = "Disconnecting NIC for %s" % name
     return render_template("update_status.html",
                            pod_num=pod_num,
