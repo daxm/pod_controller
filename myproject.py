@@ -181,11 +181,6 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
                            update_status_text=update_status_text)
 
 
-@app.route("/favicon.ico")
-def favicon():
-    return favicon.ico
-
-
 @app.route("/<path:path>")
 def catchall(path):
     log.info(f"Path: {path} not found. Rendering redirect URL.")
