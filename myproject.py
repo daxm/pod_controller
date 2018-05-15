@@ -6,7 +6,7 @@ import vmware_vcenter
 import logging
 
 logging.basicConfig(level='DEBUG')
-log = logging.getLogger("__name__")
+log = logging.getLogger(__name__)
 
 app = Flask(__name__)
 USERDATA_FILE = 'userdata.yml'
