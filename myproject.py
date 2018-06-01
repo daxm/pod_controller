@@ -1,10 +1,11 @@
 from decouple import config
 from flask import Flask
-from flask import render_template, request, flash, url_for, redirect, send_from_directory
+from flask import render_template, request, flash, url_for, redirect, send_from_directory, Response
 from ruamel.yaml import YAML
 import vmware_vcenter
 import logging
 import os
+from functools import wraps
 
 logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -21,6 +22,31 @@ with open(USERDATA_FILE, 'r') as stream:
     except:
         log.error(f"An error has occurred trying to open {USERDATA_FILE}.")
         exit(1)
+
+
+def check_auth(username, password):
+    """This function is called to check if a username/password combination is valid."""
+    if username == 'daxm' and password == 'daxm..':
+        return True
+    return False
+
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+    'Could not verify your access level for that URL.\n'
+    'You have to login with proper credentials', 401,
+    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 
 def vsphere_connect() -> (classmethod, classmethod):
@@ -87,7 +113,6 @@ def favicon():
                                'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
-
 @app.route("/")
 def index():
     title = "SDA PoV Pod Controller"
@@ -96,6 +121,7 @@ def index():
 
 
 @app.route("/pod/<string:pod_num>")
+@requires_auth
 def pod(pod_num: str):
     esxi_content, esxi_connector = vsphere_connect()
     for the_pod in pods:
