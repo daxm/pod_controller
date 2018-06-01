@@ -33,10 +33,10 @@ def check_auth(username, password):
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
-    return Response(
-    'Could not verify your access level for that URL.\n'
-    'You have to login with proper credentials', 401,
-    {'WWW-Authenticate': 'Basic realm="Login Required"'})
+    return Response('Could not verify your access level for that URL.\n'
+                    'You have to login with proper credentials',
+                    401,
+                    {'WWW-Authenticate': 'Basic realm="Login Required"'})
 
 
 def requires_auth(f):
@@ -107,11 +107,22 @@ def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str)
     return portgroup_name
 
 
+@requires_auth
+def pod_main_page(pod_num, the_pod):
+    esxi_content, esxi_connector = vsphere_connect()
+    title = "Controlling %s" % the_pod['name']
+    # Update the vms_template values with current data.
+    vms = update_vms(esxi_content, the_pod['vms'])
+    log.info(f"Rendering pod.html for pod {pod_num}.")
+    return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
+
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
+
 
 @app.route("/")
 def index():
@@ -121,16 +132,10 @@ def index():
 
 
 @app.route("/pod/<string:pod_num>")
-@requires_auth
 def pod(pod_num: str):
-    esxi_content, esxi_connector = vsphere_connect()
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
-            title = "Controlling %s" % the_pod['name']
-            # Update the vms_template values with current data.
-            vms = update_vms(esxi_content, the_pod['vms'])
-            log.info(f"Rendering pod.html for pod {pod_num}.")
-            return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
+            pod_main_page(pod_num, the_pod)
     # Return to index if invalid pod number is referenced.
     log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html")
