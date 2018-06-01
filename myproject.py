@@ -133,12 +133,15 @@ def index():
 
 @app.route("/pod/<string:pod_num>")
 def pod(pod_num: str):
+    found_pod = False
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
-            pod_main_page(pod_num, the_pod)
+            found_pod = True
+            return pod_main_page(pod_num, the_pod)
     # Return to index if invalid pod number is referenced.
-    log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
-    return render_template("none_shall_pass.html")
+    if found_pod:
+        log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
+        return render_template("none_shall_pass.html")
 
 
 @app.route("/poweroff/<string:pod_num>/<string:vmname>")
