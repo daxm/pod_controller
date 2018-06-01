@@ -24,8 +24,9 @@ with open(USERDATA_FILE, 'r') as stream:
         exit(1)
 
 
-def check_auth(username, password):
+def check_auth(username, password, pod_num):
     """This function is called to check if a username/password combination is valid."""
+    print(f"THIS IS YOUR POD_NUM=={pod_num}")
     if username == 'daxm' and password == 'daxm..':
         return True
     return False
@@ -43,7 +44,7 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
-        if not auth or not check_auth(auth.username, auth.password):
+        if not auth or not check_auth(auth.username, auth.password, pod_num):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
