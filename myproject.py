@@ -166,15 +166,23 @@ def poweroff(pod_num: str, vmname: str):
 @requires_auth
 def poweron(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
-    vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    vmware_vcenter.power_on_vm(vm)
-    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
-    update_status_text = "Powering on %s" % name
-    log.info(f"Powering on {name} for pod {pod_num}.")
-    return render_template("update_status.html",
-                           pod_num=pod_num,
-                           vmname=vmname,
-                           update_status_text=update_status_text)
+    auth = request.authorization
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname:
+                    vm = vmware_vcenter.get_vm(esxi_content, vmname)
+                    vmware_vcenter.power_on_vm(vm)
+                    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
+                    update_status_text = "Powering on %s" % name
+                    log.info(f"Powering on {name} for pod {pod_num}.")
+                    return render_template("update_status.html",
+                                           pod_num=pod_num,
+                                           vmname=vmname,
+                                           update_status_text=update_status_text)
+    # Return to index if invalid pod number, username, or vmname is referenced.
+    log.info(f"Attempt to power off {vmname} for {auth.username} in pod {pod_num} failed.  Rendering redirect URL.")
+    return render_template("none_shall_pass.html")
 
 
 @app.route("/set_portgroup/<string:pod_num>/<string:vmname>/<string:portgroup>")
@@ -182,54 +190,82 @@ def poweron(pod_num: str, vmname: str):
 def set_portgroup(pod_num: str, vmname: str, portgroup: str):
     esxi_content, esxi_connector = vsphere_connect()
     task_list = []
-    vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    new_portgroup = vmware_vcenter.get_portgroup(esxi_content, portgroup)
-    vmware_vcenter.change_vm_adapter_portgroup(vm,
-                                               idx=0,
-                                               new_portgroup=new_portgroup,
-                                               disable_adapter_before_change=True,
-                                               tasks=task_list)
-    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
-    portgroup_name = get_human_readable_portgroup_name(pod_num=pod_num, vmname=vmname, portgroup=portgroup)
-    update_status_text = "Moving %s NIC to %s" % (name, portgroup_name)
-    log.info(f"Setting portgroup {portgroup_name} for VM {name}.")
-    return render_template("update_status.html",
-                           pod_num=pod_num,
-                           vmname=vmname,
-                           portgroup=portgroup,
-                           update_status_text=update_status_text)
+    auth = request.authorization
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname:
+                    for pg in vm['portgroup_options']:
+                        if pg == portgroup:
+                            vm = vmware_vcenter.get_vm(esxi_content, vmname)
+                            new_portgroup = vmware_vcenter.get_portgroup(esxi_content, portgroup)
+                            vmware_vcenter.change_vm_adapter_portgroup(vm,
+                                                                       idx=0,
+                                                                       new_portgroup=new_portgroup,
+                                                                       disable_adapter_before_change=True,
+                                                                       tasks=task_list)
+                            name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
+                            portgroup_name = get_human_readable_portgroup_name(pod_num=pod_num,
+                                                                               vmname=vmname,
+                                                                               portgroup=portgroup)
+                            update_status_text = "Moving %s NIC to %s" % (name, portgroup_name)
+                            log.info(f"Setting portgroup {portgroup_name} for VM {name}.")
+                            return render_template("update_status.html",
+                                                   pod_num=pod_num,
+                                                   vmname=vmname,
+                                                   portgroup=portgroup,
+                                                   update_status_text=update_status_text)
+    # Return to index if invalid pod number, username, or vmname is referenced.
+    log.info(f"Attempt to change portgroup for {name} in pod {pod_num} to {portgroup} failed.  Rendering redirect URL.")
+    return render_template("none_shall_pass.html")
 
 
 @app.route("/connect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
 @requires_auth
 def connect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
-    vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    vmware_vcenter.connect_network_adapter(vm)
-    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
-    update_status_text = "Connecting NIC for %s" % name
-    log.info(f"Connecting NIC for VM {name} in pod {pod_num}.")
-    return render_template("update_status.html",
-                           pod_num=pod_num,
-                           vmname=vmname,
-                           nic_num=nic_num,
-                           update_status_text=update_status_text)
+    auth = request.authorization
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname:
+                    vm = vmware_vcenter.get_vm(esxi_content, vmname)
+                    vmware_vcenter.connect_network_adapter(vm)
+                    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
+                    update_status_text = "Connecting NIC for %s" % name
+                    log.info(f"Connecting NIC for VM {name} in pod {pod_num}.")
+                    return render_template("update_status.html",
+                                           pod_num=pod_num,
+                                           vmname=vmname,
+                                           nic_num=nic_num,
+                                           update_status_text=update_status_text)
+    # Return to index if invalid pod number, username, or vmname is referenced.
+    log.info(f"Attempt to connect NIC for {name} in pod {pod_num} failed.  Rendering redirect URL.")
+    return render_template("none_shall_pass.html")
 
 
 @app.route("/disconnect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
 @requires_auth
 def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
-    vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    vmware_vcenter.disconnect_network_adapter(vm)
-    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
-    update_status_text = "Disconnecting NIC for %s" % name
-    log.info(f"Disconnecting NIC for VM {name} in pod {pod_num}.")
-    return render_template("update_status.html",
-                           pod_num=pod_num,
-                           vmname=vmname,
-                           nic_num=nic_num,
-                           update_status_text=update_status_text)
+    auth = request.authorization
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname:
+                    vm = vmware_vcenter.get_vm(esxi_content, vmname)
+                    vmware_vcenter.disconnect_network_adapter(vm)
+                    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
+                    update_status_text = "Disconnecting NIC for %s" % name
+                    log.info(f"Disconnecting NIC for VM {name} in pod {pod_num}.")
+                    return render_template("update_status.html",
+                                           pod_num=pod_num,
+                                           vmname=vmname,
+                                           nic_num=nic_num,
+                                           update_status_text=update_status_text)
+    # Return to index if invalid pod number, username, or vmname is referenced.
+    log.info(f"Attempt to disconnect NIC for {name} in pod {pod_num} failed.  Rendering redirect URL.")
+    return render_template("none_shall_pass.html")
 
 
 @app.route("/<path:path>")
