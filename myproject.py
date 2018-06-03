@@ -11,8 +11,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', level=loggin
 log = logging.getLogger(__name__)
 
 app = Flask(__name__)
-USERDATA_FILE = 'userdata.yml'
 
+# Open/read the userdata.yml file into the pods dictionary.
+USERDATA_FILE = 'userdata.yml'
 yaml = YAML(typ='safe')
 with open(USERDATA_FILE, 'r') as stream:
     try:
@@ -23,11 +24,17 @@ with open(USERDATA_FILE, 'r') as stream:
         log.error(f"An error has occurred trying to open {USERDATA_FILE}.")
         exit(1)
 
+# Populate user/pass database for HTTP authentication.
+user_pass_db = {}
+for pod in pods:
+    user_pass_db[pod['username']] = pod['password']
+
 
 def check_auth(username, password):
     """This function is called to check if a username/password combination is valid."""
-    if username == 'pod1' and password == 'C1sco12345':
-        return True
+    for u, p in user_pass_db.items():
+        if username == u and password == p:
+            return True
     return False
 
 

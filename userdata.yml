@@ -2,6 +2,7 @@ pods:
   - pod_number: '1'
     name: 'Pod 1'
     username: 'pod1'
+    password: 'C1sco12345'
     vms:
       - vmname: 'p1-client1'
         name: 'Client #1'
@@ -11,3 +12,8 @@ pods:
           - portgroup: 'server-01_9348-01_port-1-0-11'
             name: 'Edge2 Port11'
         guac_url: 'http://10.240.1.222/#/client/UG9kMSBXaXJlZCBDbGllbnQxAGMAZGVmYXVsdA=='
+  - pod_number: '2'
+    name: 'Pod 2'
+    username: 'pod2'
+    password: 'C1sco12345'
+    vms:
