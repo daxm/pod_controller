@@ -26,7 +26,7 @@ with open(USERDATA_FILE, 'r') as stream:
 
 def check_auth(username, password):
     """This function is called to check if a username/password combination is valid."""
-    if username == 'daxm' and password == 'daxm..':
+    if username == 'pod1' and password == 'C1sco12345':
         return True
     return False
 
@@ -54,8 +54,7 @@ def vsphere_connect() -> (classmethod, classmethod):
     return vmware_vcenter.connect2vsphere(host=config("VCENTER_HOST"),
                                           user=config("VCENTER_USERNAME"),
                                           pwd=config("VCENTER_PASSWORD"),
-                                          port=config("VCENTER_PORT")
-                                          )
+                                          port=config("VCENTER_PORT"),)
 
 
 def update_vms(esxi_content: classmethod, vms: dict) -> dict:
@@ -125,8 +124,9 @@ def index():
 @app.route("/pod/<string:pod_num>")
 def pod(pod_num: str):
     esxi_content, esxi_connector = vsphere_connect()
+    auth = request.authorization
     for the_pod in pods:
-        if the_pod['pod_number'] == pod_num:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
             title = "Controlling %s" % the_pod['name']
             # Update the vms_template values with current data.
             vms = update_vms(esxi_content, the_pod['vms'])

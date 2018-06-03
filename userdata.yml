@@ -1,9 +1,7 @@
 pods:
   - pod_number: '1'
     name: 'Pod 1'
-    flask_auth:
-        username: 'daxm'
-        password: 'daxm..'
+    username: 'pod1'
     vms:
       - vmname: 'p1-client1'
         name: 'Client #1'
