@@ -122,6 +122,7 @@ def index():
 
 
 @app.route("/pod/<string:pod_num>")
+@requires_auth
 def pod(pod_num: str):
     esxi_content, esxi_connector = vsphere_connect()
     auth = request.authorization
@@ -133,25 +134,36 @@ def pod(pod_num: str):
             log.info(f"Rendering pod.html for pod {pod_num}.")
             return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
     # Return to index if invalid pod number is referenced.
-    log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
+    log.info(f"Pod requested not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html")
 
 
 @app.route("/poweroff/<string:pod_num>/<string:vmname>")
+@requires_auth
 def poweroff(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
-    vm = vmware_vcenter.get_vm(esxi_content, vmname)
-    vmware_vcenter.power_off_vm(vm)
-    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
-    update_status_text = "Powering off %s" % name
-    log.info(f"Powering off {vmname} for pod {pod_num}.")
-    return render_template("update_status.html",
-                           pod_num=pod_num,
-                           vmname=vmname,
-                           update_status_text=update_status_text)
+    auth = request.authorization
+    for the_pod in pods:
+        if the_pod['pod_number'] == pod_num and the_pod['username'] == auth.username:
+            for vm in the_pod['vms']:
+                if vm['vmname'] == vmname:
+                    vm = vmware_vcenter.get_vm(esxi_content, vmname)
+                    vmware_vcenter.power_off_vm(vm)
+                    name = get_human_readable_vm_name(pod_num=pod_num, vmname=vmname)
+                    update_status_text = "Powering off %s" % name
+                    log.info(f"Powering off {vmname} for pod {pod_num}.")
+                    return render_template("update_status.html",
+                                           pod_num=pod_num,
+                                           vmname=vmname,
+                                           update_status_text=update_status_text)
+    # Return to index if invalid pod number, username, or vmname is referenced.
+    log.info(f"Attempt to power off {vmname} for {auth.username} in pod {pod_num} failed.  Rendering redirect URL.")
+    return render_template("none_shall_pass.html")
+
 
 
 @app.route("/poweron/<string:pod_num>/<string:vmname>")
+@requires_auth
 def poweron(pod_num: str, vmname: str):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
@@ -166,6 +178,7 @@ def poweron(pod_num: str, vmname: str):
 
 
 @app.route("/set_portgroup/<string:pod_num>/<string:vmname>/<string:portgroup>")
+@requires_auth
 def set_portgroup(pod_num: str, vmname: str, portgroup: str):
     esxi_content, esxi_connector = vsphere_connect()
     task_list = []
@@ -188,6 +201,7 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
 
 
 @app.route("/connect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
+@requires_auth
 def connect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
@@ -203,6 +217,7 @@ def connect_nic(pod_num: str, vmname: str, nic_num: int):
 
 
 @app.route("/disconnect_nic/<string:pod_num>/<string:vmname>/<int:nic_num>")
+@requires_auth
 def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
     esxi_content, esxi_connector = vsphere_connect()
     vm = vmware_vcenter.get_vm(esxi_content, vmname)
@@ -218,6 +233,7 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
 
 
 @app.route("/<path:path>")
+@requires_auth
 def catchall(path):
     log.info(f"Path: {path} not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html", path=path)
