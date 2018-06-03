@@ -196,7 +196,7 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
             for vm in the_pod['vms']:
                 if vm['vmname'] == vmname:
                     for pg in vm['portgroup_options']:
-                        if pg == portgroup:
+                        if pg['portgroup'] == portgroup:
                             vm = vmware_vcenter.get_vm(esxi_content, vmname)
                             new_portgroup = vmware_vcenter.get_portgroup(esxi_content, portgroup)
                             vmware_vcenter.change_vm_adapter_portgroup(vm,
@@ -216,7 +216,8 @@ def set_portgroup(pod_num: str, vmname: str, portgroup: str):
                                                    portgroup=portgroup,
                                                    update_status_text=update_status_text)
     # Return to index if invalid pod number, username, or vmname is referenced.
-    log.info(f"Attempt to change portgroup for {name} in pod {pod_num} to {portgroup} failed.  Rendering redirect URL.")
+    log.info(f"Attempt to change portgroup for {vmname} in pod {pod_num} to {portgroup} failed.  "
+             f"Rendering redirect URL.")
     return render_template("none_shall_pass.html")
 
 
