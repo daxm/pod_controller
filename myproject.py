@@ -107,16 +107,6 @@ def get_human_readable_portgroup_name(pod_num: str, vmname: str, portgroup: str)
     return portgroup_name
 
 
-@requires_auth
-def pod_main_page(pod_num, the_pod):
-    esxi_content, esxi_connector = vsphere_connect()
-    title = "Controlling %s" % the_pod['name']
-    # Update the vms_template values with current data.
-    vms = update_vms(esxi_content, the_pod['vms'])
-    log.info(f"Rendering pod.html for pod {pod_num}.")
-    return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
-
-
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
@@ -125,6 +115,7 @@ def favicon():
 
 
 @app.route("/")
+@requires_auth
 def index():
     title = "SDA PoV Pod Controller"
     log.info("Rendering homepage.")
@@ -133,9 +124,14 @@ def index():
 
 @app.route("/pod/<string:pod_num>")
 def pod(pod_num: str):
+    esxi_content, esxi_connector = vsphere_connect()
     for the_pod in pods:
         if the_pod['pod_number'] == pod_num:
-            return pod_main_page(pod_num, the_pod)
+            title = "Controlling %s" % the_pod['name']
+            # Update the vms_template values with current data.
+            vms = update_vms(esxi_content, the_pod['vms'])
+            log.info(f"Rendering pod.html for pod {pod_num}.")
+            return render_template("pod.html", title=title, vms=vms, pod_num=pod_num)
     # Return to index if invalid pod number is referenced.
     log.info(f"Pod named: {pod_num} not found. Rendering redirect URL.")
     return render_template("none_shall_pass.html")
