@@ -20,14 +20,13 @@ with open(USERDATA_FILE, 'r') as stream:
         userdata = (yaml.load(stream))
         pods = userdata['pods']
         log.info(f"Opened and loaded {USERDATA_FILE}")
-    except:
+        # Populate user/pass database for HTTP authentication.
+        user_pass_db = {}
+        for pod in pods:
+            user_pass_db[pod['username']] = pod['password']
+    except OSError:
         log.error(f"An error has occurred trying to open {USERDATA_FILE}.")
         exit(1)
-
-# Populate user/pass database for HTTP authentication.
-user_pass_db = {}
-for pod in pods:
-    user_pass_db[pod['username']] = pod['password']
 
 
 def check_auth(username, password):
@@ -168,7 +167,6 @@ def poweroff(pod_num: str, vmname: str):
     return render_template("none_shall_pass.html")
 
 
-
 @app.route("/poweron/<string:pod_num>/<string:vmname>")
 @requires_auth
 def poweron(pod_num: str, vmname: str):
@@ -248,7 +246,7 @@ def connect_nic(pod_num: str, vmname: str, nic_num: int):
                                            nic_num=nic_num,
                                            update_status_text=update_status_text)
     # Return to index if invalid pod number, username, or vmname is referenced.
-    log.info(f"Attempt to connect NIC for {name} in pod {pod_num} failed.  Rendering redirect URL.")
+    log.info(f"Attempt to connect NIC for {vmname} in pod {pod_num} failed.  Rendering redirect URL.")
     return render_template("none_shall_pass.html")
 
 
@@ -272,7 +270,7 @@ def disconnect_nic(pod_num: str, vmname: str, nic_num: int):
                                            nic_num=nic_num,
                                            update_status_text=update_status_text)
     # Return to index if invalid pod number, username, or vmname is referenced.
-    log.info(f"Attempt to disconnect NIC for {name} in pod {pod_num} failed.  Rendering redirect URL.")
+    log.info(f"Attempt to disconnect NIC for {vmname} in pod {pod_num} failed.  Rendering redirect URL.")
     return render_template("none_shall_pass.html")
 
 
