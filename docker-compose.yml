@@ -1,8 +1,32 @@
-flask:
-  build: .
-  container_name: my_flask
-  ports:
-    - "5000:5000"
-  volumes:
-    - .:/code
+version: '3'
+
+services:
+
+  flask:
+    build: ./flask/
+    container_name: my_flask
+    restart: always
+    depends_on:
+      - nginx
+    networks:
+      proxy_net:
+    volumes:
+      - ./flask/.:/code
+
+  nginx:
+    image: nginx
+    container_name: my_nginx
+    restart: always
+    networks:
+      proxy_net:
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/certs:/etc/certs
+    ports:
+      - "80:80"
+      - "443:443"
+
+networks:
+  proxy_net:
 
