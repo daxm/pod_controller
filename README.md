@@ -8,11 +8,13 @@ mkdir -p ~/containers
 cd ~/containers
 git clone https://github.com/daxm/pod_controller.git
 cd ./pod_controller
+
 ```
 
 # Install Docker
 ```bash
 ./install_docker.sh
+
 ```
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
@@ -21,12 +23,14 @@ cd ./pod_controller
 ```bash
 cd ~/containers/pod-controller/flask
 nano .env
+
 ```
 
 # Update userdata.yml to match your environment.
 ```bash
 cd ~/containers/pod-controller/flask
 nano userdata.yml
+
 ```
 
 # Build the containers
@@ -34,6 +38,7 @@ This file will create a directory for the mysql database and build a cert for ng
 ```bash
 cd ~/containers/docker-guacamole-server
 ./runme.sh
+
 ```
 
 # Post install updating.
