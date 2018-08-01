@@ -19,21 +19,22 @@ cd ./pod_controller
 
 # Update env_file to meet password requirements
 ```bash
-cd ~/containers/docker-guacamole-server
-nano ./env_file
+cd ~/containers/pod-controller/flask
+nano .env
 ```
 
-# Prep MySQL and NGINX environments and then build containers
+# Update userdata.yml to match your environment.
+```bash
+cd ~/containers/pod-controller/flask
+nano userdata.yml
+```
+
+# Build the containers
 This file will create a directory for the mysql database and build a cert for nginx.
 ```bash
 cd ~/containers/docker-guacamole-server
 ./runme.sh
 ```
 
-# Change Guacamole admin password
-- Access your new guacamole GUI by browsing to the IP address of your server.
-- Log in with **guacadmin**/**guacadmin**
-- Navigate to **guacadmin > Settings > Users**
-- Select **guacadmin**
-- Update password field to be something new/unique and click **Save**.
-
+# Post install updating.
+If you need to modify the .env or userdata.yml files you'll need to re-run the runme.sh file.
