@@ -19,10 +19,24 @@ cd ./pod_controller
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
 
+# Rename (or use as an example) the .env-example file
+```bash
+cd ~/containers/pod-controller/flask
+cp .env-example .env
+
+```
+
 # Update env_file to meet password requirements
 ```bash
 cd ~/containers/pod-controller/flask
 nano .env
+
+```
+
+# Rename (or use as an example) the userdata.yml-example file
+```bash
+cd ~/containers/pod-controller/flask
+cp userdata.yml-example userdata.yml
 
 ```
 
