@@ -37,9 +37,7 @@ background: #3030303;
                 <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
                        for="{{ vm['vmname'] }}_power">
                     <input type="checkbox" id="{{ vm['vmname'] }}_power" class="mdl-switch__input"
-                           onclick="window.location.href='{{ url_for('poweroff',
-                                                             pod_num=pod_num,
-                                                             vmname=vm['vmname']) }}';"
+                           onclick="window.location.href='{{ url_for('poweroff', pod_num=pod_num, vmname=vm['vmname']) }}';"
                            checked>
                     <span class="mdl-switch__label">Powered On</span>
                 </label>
@@ -47,9 +45,7 @@ background: #3030303;
                 <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
                        for="{{ vm['vmname'] }}_power">
                     <input type="checkbox" id="{{ vm['vmname'] }}_power" class="mdl-switch__input"
-                           onclick="window.location.href='{{ url_for('poweron',
-                                                             pod_num=pod_num,
-                                                             vmname=vm['vmname']) }}';">
+                           onclick="window.location.href='{{ url_for('poweron', pod_num=pod_num, vmname=vm['vmname']) }}';">
                     <span class="mdl-switch__label">Powered Off</span>
                 </label>
                 {% endif %}
@@ -62,10 +58,7 @@ background: #3030303;
                 <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
                        for="{{ vm['vmname'] }}_nic">
                     <input type="checkbox" id="{{ vm['vmname'] }}_nic" class="mdl-switch__input"
-                           onclick="window.location.href='{{ url_for('disconnect_nic',
-                                                             pod_num=pod_num,
-                                                             vmname=vm['vmname'],
-                                                             nic_num=0) }}';"
+                           onclick="window.location.href='{{ url_for('disconnect_nic', pod_num=pod_num, vmname=vm['vmname'], nic_num=0) }}';"
                            checked>
                     <span class="mdl-switch__label">NIC Connected</span>
                 </label>
@@ -74,10 +67,7 @@ background: #3030303;
                 <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"
                        for="{{ vm['vmname'] }}_nic">
                     <input type="checkbox" id="{{ vm['vmname'] }}_nic" class="mdl-switch__input"
-                           onclick="window.location.href='{{ url_for('connect_nic',
-                                                             pod_num=pod_num,
-                                                             vmname=vm['vmname'],
-                                                             nic_num=0) }}';">
+                           onclick="window.location.href='{{ url_for('connect_nic', pod_num=pod_num, vmname=vm['vmname'], nic_num=0) }}';">
                     <span class="mdl-switch__label">NIC Disconnected</span>
                 </label>
                 {% endif %}
@@ -93,10 +83,7 @@ background: #3030303;
                            for="{{ vm['vmname'] }}_{{ pg }}_network">
                         <input type="radio" id="{{ vm['vmname'] }}_{{ pg }}_network" class="mdl-radio__button"
                                name="{{ vm['vmname'] }}_network" value="{{ pg }}"
-                               onclick="window.location.href='{{ url_for('set_portgroup',
-                                                                         pod_num=pod_num,
-                                                                         vmname=vm['vmname'],
-                                                                         portgroup=pg['portgroup']) }}';"
+                               onclick="window.location.href='{{ url_for('set_portgroup', pod_num=pod_num, vmname=vm['vmname'], portgroup=pg['portgroup']) }}';"
                     {% if pg['portgroup'] == vm['portgroup'] %}
                                checked
                     {% endif %}

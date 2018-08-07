@@ -6,6 +6,7 @@ pods:
     vms:
       - vmname: 'sda-lab_p1-client1'
         name: 'Client #1'
+        nic_status: ''
         portgroup_options:
           - portgroup: 'server-01_9348-01_port-1-0-10'
             name: 'Edge1 Port10'
