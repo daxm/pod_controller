@@ -29,7 +29,12 @@ cd flask
 cp .env-example .env
 cd ..
 
+echo "Copy userdata.yml-example to userdata.yml."
+cp userdata.yml-example userdata.yml
+cd ..
+
 echo "########### NEXT STEPS ############"
 echo "### 1.  Edit the flash/.env and modify it to your environment."
-echo "### 2.  Run the runme.sh file to build, deploy, and start the Docker container."
+echo "### 2.  Edit the flash/userdata.yml and modify it to your environment."
+echo "### 3.  Run the runme.sh file to build, deploy, and start the Docker container."
 echo "###################################"
