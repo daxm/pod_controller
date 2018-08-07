@@ -19,16 +19,10 @@ cd ./pod_controller
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
 
-# Rename (or use as an example) the .env-example file
+# Copy .env-example to .env and modify it to set your parameters, such as passwords.
 ```bash
-cd ~/containers/pod-controller/flask
+cd ~/containers/pod_controller/flask
 cp .env-example .env
-
-```
-
-# Update env_file to meet password requirements
-```bash
-cd ~/containers/pod-controller/flask
 nano .env
 
 ```
@@ -42,7 +36,8 @@ cp userdata.yml-example userdata.yml
 
 # Update userdata.yml to match your environment.
 ```bash
-cd ~/containers/pod-controller/flask
+cd ~/containers/pod_controller/flask
+cp userdata.yml-example userdata.yml
 nano userdata.yml
 
 ```
@@ -50,7 +45,7 @@ nano userdata.yml
 # Build the containers
 This file will create a directory for the mysql database and build a cert for nginx.
 ```bash
-cd ~/containers/docker-guacamole-server
+cd ~/containers/pod_controller
 ./runme.sh
 
 ```
