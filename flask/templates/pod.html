@@ -79,8 +79,7 @@ background: #3030303;
                 <hr>
                 Connect the NIC to port:
                 {% for pg in vm['portgroup_options'] %}
-                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
-                           for="{{ vm['vmname'] }}_{{ pg }}_network">
+                    <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="{{ vm['vmname'] }}_{{ pg }}_network">
                         <input type="radio" id="{{ vm['vmname'] }}_{{ pg }}_network" class="mdl-radio__button"
                                name="{{ vm['vmname'] }}_network" value="{{ pg }}"
                                onclick="window.location.href='{{ url_for('set_portgroup', pod_num=pod_num, vmname=vm['vmname'], portgroup=pg['portgroup']) }}';"
