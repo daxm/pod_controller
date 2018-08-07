@@ -80,6 +80,7 @@ def update_vms(esxi_content: classmethod, vms: dict) -> dict:
         # Get the Status (Connected/Disconnected) of the NIC connected to the aforementioned portgroup.
         if 'portgroup_options' in vm:
             status = vmware_vcenter.get_vm_network_adapter_status(vm_object)
+        if 'nic_status' in vm:
             if status:
                 vm['nic_status'] = 'Connected'
             else:
