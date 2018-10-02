@@ -20,7 +20,7 @@ This script will install the necessary packages and set up your environment.
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
 
-# Copy .env-example and userdata.yml-example to .env and userdata.yml (respectively) and modify it to set your parameters, such as passwords.
+# Copy and modify .env-example and userdata.yml-example to .env and userdata.yml (respectively)
 (**OPTIONAL**)
 The install_docker.sh file already copied the .env-example and userdata.yml-example files for you.  However, if you want
 to overwrite those files (to start over) use the following commands:
