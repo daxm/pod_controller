@@ -26,11 +26,16 @@ sudo usermod -aG docker $(whoami)
 
 echo "Copy .env-example to .env."
 cd flask
-cp .env-example .env
+if [ ! -f .env ]; then
+  cp .env-example .env
+fi
 cd ..
 
 echo "Copy userdata.yml-example to userdata.yml."
-cp userdata.yml-example userdata.yml
+cd flask
+if [ ! -f .userdata.yml ]; then
+  cp userdata.yml-example userdata.yml
+fi
 cd ..
 
 echo "########### NEXT STEPS ############"
