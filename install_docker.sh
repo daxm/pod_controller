@@ -23,25 +23,28 @@ sudo add-apt-repository universe
 sudo apt install python3 python3-pip python3-setuptools -y
 sudo -H pip3 install docker-compose
 
+echo ""
 echo "### Add current user to the docker group.  (Log out and back in to take effect.) ###"
 sudo usermod -aG docker $(whoami)
+echo ""
 
-echo "Copy .env-example to .env."
-cd flask
 if [ ! -f .env ]; then
+  echo "Copy .env-example to .env."
+  cd flask
   cp .env-example .env
+  cd ..
 fi
-cd ..
 
-echo "Copy userdata.yml-example to userdata.yml."
-cd flask
 if [ ! -f .userdata.yml ]; then
+  echo "Copy userdata.yml-example to userdata.yml."
+  cd flask
   cp userdata.yml-example userdata.yml
+  cd ..
 fi
-cd ..
 
 echo "########### NEXT STEPS ############"
-echo "### 1.  Edit the flash/.env and modify it to your environment."
-echo "### 2.  Edit the flash/userdata.yml and modify it to your environment."
-echo "### 3.  Run the runme.sh file to build, deploy, and start the Docker container."
+echo "1.  Log out and back in to refresh your group associations.
+echo "2.  Edit the flash/.env and modify it to your environment."
+echo "3.  Edit the flash/userdata.yml and modify it to your environment."
+echo "4.  Run the runme.sh file to build, deploy, and start the Docker containers."
 echo "###################################"

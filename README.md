@@ -12,6 +12,7 @@ cd ./pod_controller
 ```
 
 # Install Docker
+This script will install the necessary packages and set up your environment.
 ```bash
 ./install_docker.sh
 
@@ -19,11 +20,15 @@ cd ./pod_controller
 # Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
 
-# Copy .env-example to .env and modify it to set your parameters, such as passwords.
+# Copy .env-example and userdata.yml-example to .env and userdata.yml (respectively) and modify it to set your parameters, such as passwords.
+(**OPTIONAL**)
+The install_docker.sh file already copied the .env-example and userdata.yml-example files for you.  However, if you want
+to overwrite those files (to start over) use the following commands:
+
+## Variables used to connect to VMware:
 ```bash
-cd ~/containers/pod_controller/flask
-cp .env-example .env
-nano .env
+cp ~/containers/pod_controller/flask/.env-example ~/containers/pod_controller/flask/.env
+nano ~/containers/pod_controller/flask/.env
 
 ```
 
@@ -36,9 +41,8 @@ cp userdata.yml-example userdata.yml
 
 # Update userdata.yml to match your environment.
 ```bash
-cd ~/containers/pod_controller/flask
-cp userdata.yml-example userdata.yml
-nano userdata.yml
+cp ~/containers/pod_controller/flask/userdata.yml-example ~/containers/pod_controller/flask/userdata.yml
+nano ~/containers/pod_controller/flask/userdata.yml
 
 ```
 
