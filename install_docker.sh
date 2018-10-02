@@ -33,7 +33,7 @@ echo ""
 echo "### Add current user to the docker group.  (Log out and back in to take effect.) ###"
 sudo usermod -aG docker $(whoami)
 
-Xif [ ! -f ./flask/.env ]; then
+if [ ! -f ./flask/.env ]; then
   echo ""
   echo "Copy .env-example to .env."
   cp ./flask/.env-example ./flask/.env
