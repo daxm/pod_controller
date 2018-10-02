@@ -47,10 +47,10 @@ if [ ! -f ./flask/userdata.yml ]; then
 fi
 
 echo ""
-echo "########### NEXT STEPS ############"
+echo "########### NEXT STEPS ############################################################"
 echo "1.  Log out and back in to refresh your group associations."
 echo "2.  Edit the flash/.env and modify it to your environment."
 echo "3.  Edit the flash/userdata.yml and modify it to your environment."
 echo "4.  Run the runme.sh file to build, deploy, and start the Docker containers."
-echo "###################################"
+echo "###################################################################################"
 echo ""

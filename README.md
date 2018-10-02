@@ -15,7 +15,7 @@ This script will install the necessary packages and set up your environment.
 ```bash
 ./install_docker.sh
 ```
-## Update User's group environment.
+## (**OPTIONAL**) Update User's group environment.
 * Log out and back in to update your user's group or the runme.sh script won't work.
 
 ## (**OPTIONAL**) Copy and modify config files
