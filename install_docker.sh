@@ -19,7 +19,7 @@ sudo apt install docker-ce -y
 
 echo "### Install Python3 and associated packages and modules for Docker Compose. ###"
 echo "Ensure Universe repository is enabled."
-sudo apt add-apt-repository universe
+sudo add-apt-repository universe
 sudo apt install python3 python3-pip python3-setuptools -y
 sudo -H pip3 install docker-compose
 
