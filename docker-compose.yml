@@ -4,6 +4,9 @@ services:
 
   flask:
     build: ./flask/
+    dns:
+      - 208.67.222.222
+      - 208.67.220.220
     container_name: my_flask
     restart: always
     depends_on:
