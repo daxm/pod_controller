@@ -32,14 +32,7 @@ nano ~/containers/pod_controller/flask/.env
 
 ```
 
-# Rename (or use as an example) the userdata.yml-example file
-```bash
-cd ~/containers/pod-controller/flask
-cp userdata.yml-example userdata.yml
-
-```
-
-# Update userdata.yml to match your environment.
+## Variables used to describe your VMs:
 ```bash
 cp ~/containers/pod_controller/flask/userdata.yml-example ~/containers/pod_controller/flask/userdata.yml
 nano ~/containers/pod_controller/flask/userdata.yml
