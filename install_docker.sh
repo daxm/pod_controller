@@ -28,22 +28,18 @@ echo "### Add current user to the docker group.  (Log out and back in to take ef
 sudo usermod -aG docker $(whoami)
 echo ""
 
-if [ ! -f .env ]; then
+if [ ! -f ./flask/.env ]; then
   echo "Copy .env-example to .env."
-  cd flask
-  cp .env-example .env
-  cd ..
+  cp ./flask/.env-example ./flask/.env
 fi
 
-if [ ! -f .userdata.yml ]; then
+if [ ! -f ./flask/.userdata.yml ]; then
   echo "Copy userdata.yml-example to userdata.yml."
-  cd flask
-  cp userdata.yml-example userdata.yml
-  cd ..
+  cp ./flask/userdata.yml-example ./flask/userdata.yml
 fi
 
 echo "########### NEXT STEPS ############"
-echo "1.  Log out and back in to refresh your group associations.
+echo "1.  Log out and back in to refresh your group associations."
 echo "2.  Edit the flash/.env and modify it to your environment."
 echo "3.  Edit the flash/userdata.yml and modify it to your environment."
 echo "4.  Run the runme.sh file to build, deploy, and start the Docker containers."
