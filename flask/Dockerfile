@@ -1,6 +1,7 @@
 FROM ubuntu:latest
 MAINTAINER Dax Mickelson "dmickels@cisco.com"
 RUN echo "add-apt-repository universe"
+RUN echo "apt-add-repository multiverse"
 RUN echo "apt-get install -y software-properties-common"
 RUN apt-get update -y
 RUN apt-get install -y python3-pip python3-dev build-essential
